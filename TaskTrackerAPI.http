@@ -1,0 +1,29 @@
+@TaskTrackerAPI_HostAddress = http://localhost:5238
+
+GET {{TaskTrackerAPI_HostAddress}}/taskitem/
+Accept: application/json
+
+# POST {{TaskTrackerAPI_HostAddress}}/taskitem/
+# Content-Type: application/json
+# Accept: application/json
+
+# {
+#     "title": "Learn C#",
+#     "description": "Study value and reference types",
+#     "isCompleted": true
+# }
+
+# PATCH  {{TaskTrackerAPI_HostAddress}}/taskitem/1
+# Content-Type: application/json
+# Accept: application/json
+
+# {
+#     "title": "Learn F#",
+#     "description": "Study value types",
+#     "isCompleted": false
+# }
+
+# DELETE  {{TaskTrackerAPI_HostAddress}}/taskitem/1
+# Accept: application/json
+
+###
