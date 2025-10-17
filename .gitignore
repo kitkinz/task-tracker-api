@@ -1,2 +1,6 @@
+# Build files
 /bin
 /obj
+
+# JetBrains Rider
+.idea/
