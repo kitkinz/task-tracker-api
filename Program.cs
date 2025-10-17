@@ -1,3 +1,4 @@
+using Scalar.AspNetCore;
 using TaskTrackerAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference("/docs", options =>
+    {
+        options
+            .WithTitle("Task API")
+            .WithTheme(ScalarTheme.Purple)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
 }
 
 app.UseHttpsRedirection();
