@@ -1,14 +1,22 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using TaskTrackerAPI.Data;
 using TaskTrackerAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<TaskItemService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseNpgsql(builder.Configuration["DbConnectionString"]!);
+});
+
+builder.Services.AddScoped<TaskItemService>();
 
 var app = builder.Build();
 

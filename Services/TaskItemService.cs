@@ -1,55 +1,58 @@
+using Microsoft.EntityFrameworkCore;
+using TaskTrackerAPI.Data;
 using TaskTrackerAPI.Models;
 
 namespace TaskTrackerAPI.Services;
 
 public class TaskItemService
 {
+    private readonly AppDbContext _dbContext;
     static List<TaskItem> TaskItems { get; set; }
-    static int taskId = 2;
+    // static int taskId = 2;
 
     static TaskItemService()
     {
         TaskItems = new List<TaskItem>
         {
-            new TaskItem {Id = 1, Title = "Clean room", Description = "Sweep the floor", IsCompleted = false }
+            new TaskItem { Id = 1, Title = "Clean room", Description = "Sweep the floor", IsCompleted = false }
         };
     }
 
+    public TaskItemService(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
     // Get all tasks
-    public static List<TaskItem> GetAll() => TaskItems;
+    public async Task<IEnumerable<TaskItem>> GetAll() => await _dbContext.TaskItems.ToListAsync();
 
     // Returns a task by ID, or null if not found
-    public static TaskItem? Get(int id) => TaskItems.FirstOrDefault(taskItem => taskItem.Id == id);
-
-    // Add a task
-    public static int AddTaskItem(TaskItem taskItem)
+    public async Task<TaskItem?> Get(int id)
     {
-        taskItem.Id = taskId++;
-        TaskItems.Add(taskItem);
-        return taskItem.Id;
+        return await _dbContext.TaskItems.FindAsync(id);
+    }
+
+    // Add a task (cloud)
+    public async Task<TaskItem> AddTaskItem(TaskItem taskItem)
+    {
+        _dbContext.TaskItems.Add(taskItem);
+        await _dbContext.SaveChangesAsync();
+
+        return taskItem;
     }
 
     // Delete a task
-    public static void DeleteTaskItem(int id)
+    public async Task<bool> DeleteTaskItem(int id)
     {
-        var taskItem = Get(id);
-        if (taskItem is null)
-        {
-            return;
-        }
-        TaskItems.Remove(taskItem);
+        var result = await _dbContext.TaskItems.Where(item => item.Id == id).ExecuteDeleteAsync();
+        return result > 0;
     }
 
     // Update a task
-    public static void UpdateTaskItem(TaskItem taskItem)
+    public async Task<TaskItem?> UpdateTaskItem(TaskItem taskItem)
     {
-        int idx = TaskItems.FindIndex(task => task.Id == taskItem.Id);
-
-        if (idx == -1)
-        {
-            return;
-        }
-
-        TaskItems[idx] = taskItem; 
+        _dbContext.TaskItems.Update(taskItem);
+        var result = await _dbContext.SaveChangesAsync();
+        return result > 0 ? taskItem : null;
     }
 }

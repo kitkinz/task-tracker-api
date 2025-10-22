@@ -6,26 +6,26 @@ namespace TaskTrackerAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-
 public class TaskItemController : ControllerBase
 {
     private readonly TaskItemService _taskItemService;
+
     public TaskItemController(TaskItemService taskItemService)
     {
         _taskItemService = taskItemService;
     }
 
     [HttpGet]
-    public IEnumerable<TaskItem> GetTaskItems()
+    public async Task<IEnumerable<TaskItem>> GetTaskItems()
     {
-        var results = TaskItemService.GetAll();
+        var results = await _taskItemService.GetAll();
         return results;
     }
 
     [HttpGet("{id}")]
-    public TaskItem GetTaskItem(int id)
+    public async Task<TaskItem> GetTaskItem(int id)
     {
-        var item = TaskItemService.Get(id);
+        var item = await _taskItemService.Get(id);
 
         if (item is null)
         {
@@ -36,25 +36,27 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpPost]
-    public int AddTaskItem(TaskItem taskItem)
+    public async Task<TaskItem> AddTaskItem(TaskItem taskItem)
     {
-        var itemId = TaskItemService.AddTaskItem(taskItem);
-        return itemId;
+        var item = await _taskItemService.AddTaskItem(taskItem);
+        return item;
     }
 
     [HttpDelete("{id}")]
-    public void DeleteTaskItem(int id)
+    public async Task<bool> DeleteTaskItem(int id)
     {
-        TaskItemService.DeleteTaskItem(id);
-        Console.WriteLine("Task successfully deleted.");
+        var result = await _taskItemService.DeleteTaskItem(id);
+        Console.WriteLine(result ? "Task successfully deleted." : "Failed to delete Task.");
+
+        return result;
     }
 
     [HttpPatch("{id}")]
-    public IActionResult UpdateTaskItem(TaskItem taskItem, int id)
+    public async Task<IActionResult?> UpdateTaskItem(TaskItem taskItem, int id)
     {
         taskItem.Id = id;
 
-        TaskItemService.UpdateTaskItem(taskItem);
+        await _taskItemService.UpdateTaskItem(taskItem);
         return NoContent();
     }
 }
